@@ -76,8 +76,8 @@ public class WorkoutSummaryActivity extends Activity {
             // Only want to add one renderer
             renderer.addSeriesRenderer(ren);
             renderer.setApplyBackgroundColor(true);
-            renderer.setBackgroundColor(Color.GRAY);
-            renderer.setMarginsColor(Color.GRAY);
+            renderer.setBackgroundColor(Color.LTGRAY);
+            renderer.setMarginsColor(Color.LTGRAY);
 
             LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
             mChartView = ChartFactory.getLineChartView(this, dataset,
