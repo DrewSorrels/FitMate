@@ -16,5 +16,4 @@
             android:label="@string/title_activity_workout_summary" >
         </activity>
     </application>
-
 </manifest>
