@@ -1,85 +1,81 @@
 package mhacks4.fitmate;
 
 import android.app.Activity;
+import android.app.LauncherActivity;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class OverviewActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>{
-    private ListView workoutList;
-    // This is the Adapter being used to display the list's data
-    SimpleCursorAdapter mAdapter;
-
-    static final String[] PROJECTION = new String[] {ContactsContract.Data._ID,
-            ContactsContract.Data.DISPLAY_NAME};
-
-    static final String SELECTION = "((" +
-            ContactsContract.Data.DISPLAY_NAME + " NOTNULL) AND (" +
-            ContactsContract.Data.DISPLAY_NAME + " != '' ))";
-
+public class OverviewActivity extends ListActivity {
+    // The list representation of workouts
+    private ListView list;
+    //private WorkoutAdapter adapter;
+    private List<Workout> workouts = new ArrayList<Workout>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        workoutList = getListView();
         setContentView(R.layout.activity_overview);
-    }
 
+        final ListView listview = (ListView) findViewById(android.R.id.list);
+        String[] values = new String[]{"Android", "iPhone", "WindowsMobile",
+                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
+                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
+                "Android", "iPhone", "WindowsMobile"};
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.overview, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        final ArrayList<Workout> list = new ArrayList<Workout>();
+        for (int i = 0; i < values.length; ++i) {
+            list.add(new Workout(values[i]));
         }
-        return super.onOptionsItemSelected(item);
-    }
+        final ArrayAdapter adapter = new ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, list);
+        listview.setAdapter(adapter);
 
-    // Called when a new Loader needs to be created
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(this, ContactsContract.Data.CONTENT_URI,
-                PROJECTION, SELECTION, null, null);
-    }
+        final Button btn = (Button)findViewById(R.id.new_workout);
+        btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                list.add(new Workout("New Workout"));
+                listview.invalidateViews();
+            }
+        });
 
-    // Called when a previously created loader has finished loading
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in.  (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.swapCursor(data);
-    }
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-    // Called when a previously created loader is reset, making the data unavailable
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
-    }
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    int position, long id) {
+                final Workout item = (Workout) parent.getItemAtPosition(position);
+                Intent intent = new Intent(OverviewActivity.this, WorkoutSummaryActivity.class);
+                intent.putExtra("SPEEDS", item.getSpeed().toArray());
+                intent.putExtra("HEART_RATES", item.getHeartRate().toArray());
+                intent.putExtra("TITLE", item.getTitle());
+                startActivity(intent);
+            }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // Do something when a list item is clicked
+        });
     }
 }
