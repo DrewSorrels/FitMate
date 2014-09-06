@@ -13,12 +13,17 @@ public class Workout extends LauncherActivity.ListItem {
     private List<Double> speed;
     private String title;
 
+    // Create a new workout object with blank title.
     public Workout(){
         heartRate = new ArrayList<Integer>();
         speed = new ArrayList<Double>();
         title = "";
     }
 
+    /*
+    * Create a new workout object with a given title.
+    * @param title  Title describing the workout
+    */
     public Workout(String title){
         heartRate = new ArrayList<Integer>();
         speed = new ArrayList<Double>();
@@ -29,6 +34,7 @@ public class Workout extends LauncherActivity.ListItem {
         this.title = title;
     }
 
+    // Getters and Setters below.  Boilerplate code.
     public void addHeartRate(int heartRate) {
         this.heartRate.add(heartRate);
     }

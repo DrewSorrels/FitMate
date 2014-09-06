@@ -39,33 +39,36 @@ public class OverviewActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
 
+        // Create list view for index of previous workouts
         final ListView listview = (ListView) findViewById(android.R.id.list);
-        String[] values = new String[]{"Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-                "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-                "Android", "iPhone", "WindowsMobile"};
+        String[] values = new String[]{"Workout 9/6", "Morning Run 9/2"};
 
+        // Dummy data for list with above names.
         final ArrayList<Workout> list = new ArrayList<Workout>();
         for (int i = 0; i < values.length; ++i) {
             list.add(new Workout(values[i]));
         }
+        // Adapter for display of listview
         final ArrayAdapter adapter = new ArrayAdapter(this,
                 android.R.layout.simple_list_item_1, list);
         listview.setAdapter(adapter);
 
+        // Create button to create a new workout
         final Button btn = (Button)findViewById(R.id.new_workout);
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
+                // Add new Workout with title 'new workout'.  Temporary measure.
                 list.add(new Workout("New Workout"));
                 listview.invalidateViews();
             }
         });
 
+        // When clicking an item, bring up the activity view for that workout.
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-            @Override
+            /*
+             * Pass through essential data from that workout for recreation in the new view.
+             */
             public void onItemClick(AdapterView<?> parent, final View view,
                                     int position, long id) {
                 final Workout item = (Workout) parent.getItemAtPosition(position);

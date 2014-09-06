@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Created by Drew on 9/6/2014.
+ * Modify (?) output of ListView in @OverviewActivity.
  */
 public class WorkoutAdapter extends ArrayAdapter<Workout> {
 
