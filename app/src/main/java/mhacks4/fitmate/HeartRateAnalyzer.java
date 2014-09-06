@@ -7,12 +7,13 @@ import java.util.List;
  * Analysis of heart rate to identify rest periods, and times of extreme strain.
  */
 public class HeartRateAnalyzer extends Analyzer {
-
+     private int maxHeartRate;
     /*
      * Create a new Heart Rate Analyzer object.
      */
     public HeartRateAnalyzer(List<Integer> data){
         this.data = data;
+        maxHeartRate = 200;
         restStart = new ArrayList<Integer>();
         restEnd = new ArrayList<Integer>();
         spikePoints = new ArrayList<Integer>();
@@ -50,7 +51,7 @@ public class HeartRateAnalyzer extends Analyzer {
         spikePoints.clear();
         for(int i = 0; i < data.size(); i++){
             // Find points of above healthy max
-            if(data.get(i) >= (200 * 0.85)){
+            if(data.get(i) >= (maxHeartRate * 0.85)){
                 spikePoints.add(i);
             }
             // Find points where there is a drop in 20 bp in 5 seconds (close to fainting?)
