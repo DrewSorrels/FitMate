@@ -1,6 +1,7 @@
 package mhacks4.fitmate;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import java.util.List;
 
+import zephyr.android.HxMBT.BTClient;
+import zephyr.android.HxMBT.ZephyrProtocol;
+
 /*
  * Summary page for a workout.  Displays a heartrate / movement speed graph and textual analysis of that graph for user information.
  */
@@ -26,6 +30,15 @@ public class WorkoutSummaryActivity extends Activity {
     private GraphicalView mChartView;
     private XYMultipleSeriesDataset dataset;
     private XYMultipleSeriesRenderer renderer;
+
+    // Zephyr controls
+    BluetoothAdapter adapter = null;
+    BTClient _bt;
+    ZephyrProtocol _protocol;
+    NewConnectedListener _NConnListener;
+    private final int HEART_RATE = 0x100;
+    private final int INSTANT_SPEED = 0x101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
