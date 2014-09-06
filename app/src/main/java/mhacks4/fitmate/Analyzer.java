@@ -6,7 +6,11 @@ import java.util.List;
  * Highest tier of the Analyzer type.
  */
 public abstract class Analyzer {
-    private List<Integer> restRange;
+    protected List<Integer> restStart;
+    protected List<Integer> restEnd;
+
+    protected List<Integer> data;
+    protected List<Integer> spikePoints;
 
     public abstract void populateRestRange();
 }
