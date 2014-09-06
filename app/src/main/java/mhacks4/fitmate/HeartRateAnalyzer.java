@@ -1,5 +1,6 @@
 package mhacks4.fitmate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,8 +8,16 @@ import java.util.List;
  */
 public class HeartRateAnalyzer extends Analyzer {
 
+    /*
+     * Create a new Heart Rate Analyzer object.
+     */
     public HeartRateAnalyzer(List<Integer> data){
         this.data = data;
+        restStart = new ArrayList<Integer>();
+        restEnd = new ArrayList<Integer>();
+        spikePoints = new ArrayList<Integer>();
+        exerciseStart = new ArrayList<Integer>();
+        exerciseEnd = new ArrayList<Integer>();
     }
 
    /*
@@ -57,12 +66,15 @@ public class HeartRateAnalyzer extends Analyzer {
      * Find instances of one exercise.  e.g. 4 sets would have 3 breaks in between, but we want to classify it all as one exercise.
      */
     public void populateExercises(){
+        populateRestRange();
         int restPoints = 0;
+        exerciseEnd.clear();
+        exerciseStart.clear();
 
         for(int i = 0; i < restEnd.size(); i++){
             restPoints += restEnd.get(i) - restStart.get(i) - 1;
         }
-        int exStart;
+        int exStart = 0;
         int exEnd;
         int setNumber = 0;
         int restRegion = 0;
@@ -70,24 +82,37 @@ public class HeartRateAnalyzer extends Analyzer {
         // Add points to setStart and setEnd based on break length and
         for(int i = 0; i < data.size(); i++){
             // Start first exercise on interval starting at 0
-            if(restRegion == 0){
-                exStart = 0;
-            } else if(exFinished){
+            if(exFinished){
                 exFinished = false;
+                setNumber = 0;
                 exStart = restEnd.get(restRegion - 1) + 1;
             }
 
+            if(setNumber == 0){
+                exerciseStart.add(exStart);
+            }
+
             // Calculate where we are in the set
-            if(i > restStart.get(restRegion)){
-                // We started resting
-                if(i < restEnd.get(restRegion)){
-                    if(restEnd.get(restRegion) - restStart.get(restRegion) >= 28){
-                        exFinished = true;
+            // We want to make sure that we do not collect points from before the set starts (in the
+            // case that the last rest was >= 28 time intervals, which would automatically cause the
+            // exercise to complete.  Nobody rests for that long unless they are a wimp. (or they
+            // are changing equipment, in which case they are most likely changing exercises)
+            if(i > exStart) {
+                if (i >= restStart.get(restRegion)) {
+                    // We started resting
+                    if (i < restEnd.get(restRegion)) {
+                        // We have not finished resting, check if we have been resting excessively.
+                        if (restEnd.get(restRegion) - restStart.get(restRegion) >= 28 || setNumber >= 4) {
+                            // We have been resting for 28 time intervals (~2min 20s given 5s intervals) or completed 5 sets
+                            exFinished = true;
+                            restRegion += 1;
+                            exerciseEnd.add(i - 1);
+                        }
+                    } else {
+                        // Finished resting, so increment restRegion and setNumber
+                        restRegion += 1;
+                        setNumber += 1;
                     }
-                } else {
-                    // Finished resting, so increment restRegion and setNumber
-                    restRegion += 1;
-                    setNumber += 1;
                 }
             }
         }
